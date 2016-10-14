@@ -118,6 +118,13 @@ class QueueBasicSamples():
         for message in messages:
             print('Peeked message content is: ', message.content)
 
+        # Update the visibility timeout of a message 
+        # You can also use this operation to update the contents of a message.
+        print('Update the visibility timeout of a message')
+        messages = queue_service.get_messages(queuename)
+        message = messages[0]
+        queue_service.update_message(queuename, message.id, message.pop_receipt, 300)
+
         # Dequeuing a message
         # First get the message, to read and process it.
         #  Specify num_messages to process a number of messages. If not specified, num_messages defaults to 1
