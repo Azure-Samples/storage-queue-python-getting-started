@@ -28,14 +28,14 @@ To get the source code of the SDK via git, type:
 git clone git://github.com/Azure-Samples/storage-queue-python-getting-started.git
 cd .\storage-queue-python-getting-started
 
-##Minimum Requirements
+## Minimum Requirements
 Python 2.7, 3.3, or 3.4.
 To install Python, please go to https://www.python.org/downloads/
 
 ## More information
-  - What is a Storage Account - http://azure.microsoft.com/en-us/documentation/articles/storage-whatis-account/  
+  - What is a Storage Account - https://azure.microsoft.com/en-us/documentation/articles/storage-whatis-account/  
   - Getting Started with Queues - https://azure.microsoft.com/en-us/documentation/articles/storage-python-how-to-use-queue-storage/
-  - Queue Service Concepts - http://msdn.microsoft.com/en-us/library/dd179353.aspx
-  - Queue Service REST API - http://msdn.microsoft.com/en-us/library/dd179363.aspx
-  - Queue Service Python API - http://azure.github.io/azure-storage-python/ref/azure.storage.queue.html
-  - Storage Emulator - http://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/
+  - Queue Service Concepts - https://msdn.microsoft.com/en-us/library/dd179353.aspx
+  - Queue Service REST API - https://msdn.microsoft.com/en-us/library/dd179363.aspx
+  - Queue Service Python API - https://azure.github.io/azure-storage-python/ref/azure.storage.queue.html
+  - Storage Emulator - https://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/
