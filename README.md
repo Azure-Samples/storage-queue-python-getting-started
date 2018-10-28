@@ -25,7 +25,7 @@ To run the sample using the Storage Service
 Either fork the sample to a local folder or download the zip file from https://github.com/Azure-Samples/storage-queue-python-getting-started/
 
 To get the source code of the SDK via git, type:
-git clone git://github.com/Azure-Samples/storage-queue-python-getting-started.git
+git clone https://github.com/Azure-Samples/storage-queue-python-getting-started.git
 cd .\storage-queue-python-getting-started
 
 ##Minimum Requirements
