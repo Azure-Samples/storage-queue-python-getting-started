@@ -28,8 +28,8 @@
 #---------------------------------------------------------------------------
 
 import config
-import azure.common
-from azure.storage import CloudStorageAccount
+import azure.storage.common
+from azure.storage.common import CloudStorageAccount
 from queue_basic_samples import QueueBasicSamples
 from queue_advanced_samples import QueueAdvancedSamples
 

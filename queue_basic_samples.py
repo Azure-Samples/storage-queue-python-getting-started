@@ -14,9 +14,8 @@
 # places, or events is intended or should be inferred.
 #----------------------------------------------------------------------------------
 
-from azure.storage import CloudStorageAccount
+from azure.storage.common import CloudStorageAccount
 from azure.storage.queue import Queue, QueueService, QueueMessage
-from azure.common import AzureException
 import config
 from random_data import RandomData
 
