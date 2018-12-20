@@ -150,3 +150,4 @@ class QueueBasicSamples():
         if queue_service.exists(queuename):
             queue_service.delete_queue(queuename)    
             print('Successfully deleted queue: ', queuename)
+            
