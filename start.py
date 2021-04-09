@@ -22,36 +22,26 @@
 # 3. Run the project. 
 
 # To run the sample using the Storage Service
-# 1. Open the config.py file and set IS_EMULATED to false.
-# 2. Create a Storage Account through the Azure Portal and provide your STORAGE_ACCOUNT_NAME and STORAGE_ACCOUNT_KEY in the config.py file. See https://azure.microsoft.com/en-us/documentation/articles/storage-create-storage-account/ for more information.
-# 3. Set breakpoints and run the project. 
+# 1. Create a Storage Account through the Azure Portal and provide your STORAGE_CONNECTION_STRING in the config.py file. See https://azure.microsoft.com/en-us/documentation/articles/storage-create-storage-account/ for more information.
+# 2. Set breakpoints and run the project. 
 #---------------------------------------------------------------------------
 
 import config
-import azure.storage.common
-from azure.storage.common import CloudStorageAccount
 from queue_basic_samples import QueueBasicSamples
 from queue_advanced_samples import QueueAdvancedSamples
 
 print('Azure Storage Queue samples for Python')
 
-# Create the storage account object and specify its credentials 
-# to either point to the local Emulator or your Azure subscription
-if config.IS_EMULATED:
-    account = CloudStorageAccount(is_emulated=True)
-else:
-    account_name = config.STORAGE_ACCOUNT_NAME
-    account_key = config.STORAGE_ACCOUNT_KEY
-    account = CloudStorageAccount(account_name, account_key)
+storage_connection_string = config.STORAGE_CONNECTION_STRING
 
 #Basic Queue samples
 print ('---------------------------------------------------------------')
 print('Azure Storage Queue samples')
 queue_basic_samples = QueueBasicSamples()
-queue_basic_samples.run_all_samples(account)
+queue_basic_samples.run_all_samples(storage_connection_string)
 
 #Advanced Queue samples
 print ('---------------------------------------------------------------')
 print('Azure Storage Advanced Queue samples')
 queue_advanced_samples = QueueAdvancedSamples()
-queue_advanced_samples.run_all_samples(account)
+queue_advanced_samples.run_all_samples(storage_connection_string)
