@@ -14,11 +14,8 @@
 # places, or events is intended or should be inferred.
 #----------------------------------------------------------------------------------
 
-from azure.storage.common import CloudStorageAccount, AccessPolicy
-from azure.storage.queue import Queue, QueueService, QueueMessage, QueuePermissions
-from azure.storage.common import CorsRule, Logging, Metrics, RetentionPolicy
-from azure.common import AzureException
-import config
+from azure.storage.queue import QueueServiceClient, QueueSasPermissions
+from azure.storage.queue import CorsRule, Metrics, RetentionPolicy, AccessPolicy, QueueAnalyticsLogging
 from random_data import RandomData
 import datetime
 
@@ -44,14 +41,12 @@ class QueueAdvancedSamples():
         self.random_data = RandomData()
 
     # Runs all samples for Azure Storage Queue service.
-    # Input Arguments:
-    # account - CloudStorageAccount to use for running the samples
-    def run_all_samples(self, account):
+    def run_all_samples(self, connection_string):
         try:
             print('Azure Storage Advanced Queue samples - Starting.')
 
             # create a new queue service that can be passed to all methods
-            queue_service = account.create_queue_service()
+            queue_service = QueueServiceClient.from_connection_string(conn_str=connection_string)
 
             print('\n\n* List queues *\n')
             self.list_queues(queue_service)
@@ -68,11 +63,8 @@ class QueueAdvancedSamples():
             print('\n\n* Set queue metadata *\n')
             self.metadata_operations(queue_service)
                     
-        except Exception as e:
-            if (config.IS_EMULATED):
-                print('Error occurred in the sample. Please make sure the Storage emulator is running.', e)
-            else: 
-                print('Error occurred in the sample. Please make sure the account name and key are correct.', e)
+        except Exception as e: 
+            print('Error occurred in the sample.', e)
         finally:
             print('\nAzure Storage Advanced Queue samples - Completed\n')
     
@@ -96,8 +88,7 @@ class QueueAdvancedSamples():
         finally:                
             print('3. Delete queues with prefix:' + queue_prefix) 
             for i in range(5):
-                if queue_service.exists(queue_prefix + str(i)):
-                    queue_service.delete_queue(queue_prefix + str(i))
+                queue_service.delete_queue(queue_prefix + str(i))
     
         print("List queues sample completed")
     
@@ -113,15 +104,18 @@ class QueueAdvancedSamples():
 
         try:
             print('1. Get Cors Rules')
-            original_cors_rules = queue_service.get_queue_service_properties().cors
+            original_cors_rules = queue_service.get_service_properties()['cors']
             
             print('2. Overwrite Cors Rules')
-            queue_service.set_queue_service_properties(cors=[cors_rule])
+            queue_service.set_service_properties(cors=[cors_rule])
+        
+        except Exception as e:
+            print(e)
 
         finally:        
             print('3. Revert Cors Rules back the original ones')
             #reverting cors rules back to the original ones
-            queue_service.set_queue_service_properties(cors=original_cors_rules)
+            queue_service.set_service_properties(cors=original_cors_rules)
         
         print("CORS sample completed")
         
@@ -130,18 +124,18 @@ class QueueAdvancedSamples():
 
         try:
             print('1. Get Queue service properties')
-            props = queue_service.get_queue_service_properties()
+            props = queue_service.get_service_properties()
 
             retention = RetentionPolicy(enabled=True, days=5)
-            logging = Logging(delete=True, read=False, write=True, retention_policy=retention)
+            logging = QueueAnalyticsLogging(delete=True, read=False, write=True, retention_policy=retention)
             hour_metrics = Metrics(enabled=True, include_apis=True, retention_policy=retention)
             minute_metrics = Metrics(enabled=False)
 
             print('2. Ovewrite Queue service properties')
-            queue_service.set_queue_service_properties(logging=logging, hour_metrics=hour_metrics, minute_metrics=minute_metrics)
+            queue_service.set_service_properties(analytics_logging=logging, hour_metrics=hour_metrics, minute_metrics=minute_metrics)
         finally:
             print('3. Revert Queue service properties back to the original ones')
-            queue_service.set_queue_service_properties(logging=props.logging, hour_metrics=props.hour_metrics, minute_metrics=props.minute_metrics)
+            queue_service.set_service_properties(analytics_logging=props['analytics_logging'], hour_metrics=props['hour_metrics'], minute_metrics=props['minute_metrics'])
 
         print('4. Set Queue service properties completed')
     
@@ -152,23 +146,20 @@ class QueueAdvancedSamples():
         try:
             # Create a new queue
             print('1. Create a queue with custom metadata - ' + queue_name)
-            queue_service.create_queue(queue_name, {'category':'azure-storage', 'type': 'queue-sample'})
+            queue_client = queue_service.create_queue(queue_name, {'category':'azure-storage', 'type': 'queue-sample'})
             
             # Get all the queue metadata 
             print('2. Get queue metadata')
-
-            metadata = queue_service.get_queue_metadata(queue_name)
+            metadata = queue_client.get_queue_properties().metadata
             
             print('    Metadata:')
-
             for key in metadata:
                 print('        ' + key + ':' + metadata[key])
 
         finally:
             # Delete the queue
             print("3. Delete Queue")
-            if queue_service.exists(queue_name):
-                queue_service.delete_queue(queue_name)
+            queue_client.delete_queue()
     
     # Manage access policy of a queue
     def queue_acl_operations(self, queue_service):
@@ -176,24 +167,24 @@ class QueueAdvancedSamples():
 
         try:        
             print('1. Create a queue with name - ' + queue_name)
-            queue_service.create_queue(queue_name)
+            queue_client = queue_service.create_queue(queue_name)
                 
             print('2. Set access policy for queue')
-            access_policy = AccessPolicy(permission=QueuePermissions.READ,
-                                        expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1))
+            access_policy = AccessPolicy(permission=QueueSasPermissions(read=True),
+                                        expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+                                        start=datetime.datetime.utcnow())
             identifiers = {'id': access_policy}
-            queue_service.set_queue_acl(queue_name, identifiers)
+            queue_client.set_queue_access_policy(signed_identifiers=identifiers)
 
             print('3. Get access policy from queue')
-            acl = queue_service.get_queue_acl(queue_name)
+            acl = queue_client.get_queue_access_policy()
 
             print('4. Clear access policy in queue')
             # Clear
-            queue_service.set_queue_acl(queue_name)
+            queue_client.set_queue_access_policy({})
 
         finally:
             print('5. Delete queue')
-            if queue_service.exists(queue_name):
-                queue_service.delete_queue(queue_name)
+            queue_client.delete_queue()
             
         print("Queue ACL operations sample completed")

@@ -13,9 +13,7 @@
 # organization, product, domain name, email address, logo, person,
 # places, or events is intended or should be inferred.
 #--------------------------------------------------------------------------
-# Please do not include this file if you plan to contribute to this repo to assure your storage account name and key are not inadvertantly shared
+# Please do not include this file if you plan to contribute to this repo to assure your storage connection string is not inadvertantly shared
 #--------------------------------------------------------------------------
 
-STORAGE_ACCOUNT_NAME = ''
-STORAGE_ACCOUNT_KEY = ''
-IS_EMULATED = True
+STORAGE_CONNECTION_STRING = ''
